@@ -1,0 +1,74 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+</head>
+
+<body>
+    <div>
+        <div id="images" class="columns">
+        </div>
+        <div id="modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content"></div>
+            <button class="modal-close is-large" aria-label="close" onclick="closeModal()"></button>
+        </div>
+    </div>
+    <script>
+        var items = []; //APIのレスポンス保持用の配列
+
+        (function() {
+            var url = "https://dog.ceo/api/breed/hound/images";
+            $.getJSON(url)
+                .done(function(data) {
+                    items = data.message.slice(0, 8).map(function(element) {
+                        return {
+                            url: element,
+                            like: 0
+                        };
+                    });
+                    $.each(items, function(i, item) {
+                        var html = "<img src='" + item.url + "' onclick='openModal(" + i + ")' />"; // イベントをフック
+
+                        // NEWラベルを追加
+                        if (i < 3) {
+                            html += '<span v-if="i < 3" class="tag is-danger">NEW</span>';
+                        }
+
+                        // いいねボタンを追加
+                        html += "&nbsp;<a class='button is-warning  is-small' onclick='like( " + i + ")'><span>いいね！ " + item.like + "件</span></a>";
+
+                        $("<div id='item" + i + "' class='column' />").html(html).appendTo("#images");
+                    });
+                });
+        })();
+
+        /**
+           　Modalのオープン
+        **/
+        function openModal(i) {
+            console.log(items[i]);
+            $("#modal .modal-content").html("<p class='image'><img src='" + items[i].url + "' /></p>");
+            $("#modal").addClass("is-active");
+        }
+
+        /**
+           　Modalのクローズ
+        **/
+        function closeModal() {
+            $("#modal").removeClass("is-active");
+        }
+
+        /**
+            like！
+        **/
+        function like(i) {
+            items[i].like += 1;
+            $("#item" + i + " .button").html("<span>いいね！ " + items[i].like + "件</span>");
+        }
+    </script>
+</body>
+
+</html>

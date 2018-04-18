@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.css">
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="columns">
+            <div v-for="(item, i) in items" class='column'>
+                <img v-bind:src='item.url' v-on:click="modal=i" />
+                <span v-if="i < 3" class="tag is-danger">NEW</span>
+                <a class="button is-warning  is-small" v-on:click="item.like += 1">
+                    <span>いいね！{{item.like}}件</span>
+                </a>
+            </div>
+        </div>
+        <div class="modal" v-bind:class="modal!==null ? 'is-active': ''">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <p class="image">
+                    <img v-if="modal" :src="items[modal].url" />
+                </p>
+            </div>
+            <button class="modal-close is-large" aria-label="close" v-on:click="modal=null"></button>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                items: [],
+                modal: null,
+            },
+            mounted() {
+                let self = this;
+                let url = "https://dog.ceo/api/breed/hound/images";
+                axios.get(url)
+                    .then(function(response) {
+                        self.items = response.data.message.slice(0, 8).map(function(element) {
+                            return {
+                                url: element,
+                                like: 0
+                            };
+                        });
+                    });
+            }
+        })
+    </script>
+</body>
+
+</html>
